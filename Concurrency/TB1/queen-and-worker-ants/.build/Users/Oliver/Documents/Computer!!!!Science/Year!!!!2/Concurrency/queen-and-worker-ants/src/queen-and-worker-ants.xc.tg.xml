@@ -1,0 +1,131 @@
+<taskgraph>
+<task>
+  <name>delay_seconds</name>
+  <inFunction>delay_seconds</inFunction>
+  <calledFunction>delay_ticks_longlong</calledFunction>
+</task>
+<task>
+  <name>delay_milliseconds</name>
+  <inFunction>delay_milliseconds</inFunction>
+  <calledFunction>delay_ticks_longlong</calledFunction>
+</task>
+<task>
+  <name>delay_microseconds</name>
+  <inFunction>delay_microseconds</inFunction>
+  <calledFunction>delay_ticks_longlong</calledFunction>
+</task>
+<task>
+  <name>queen</name>
+  <inFunction>queen</inFunction>
+</task>
+<task>
+  <name>super_queen</name>
+  <inFunction>super_queen</inFunction>
+</task>
+<task>
+  <name>worker</name>
+  <inFunction>worker</inFunction>
+</task>
+<task>
+  <name>main</name>
+  <inFunction>main</inFunction>
+</task>
+<task>
+  <name>_task_worker_0</name>
+  <inFunction>main</inFunction>
+  <parent>main</parent>
+  <calledFunction>worker</calledFunction>
+  <core>1</core>
+  <inPar/>
+</task>
+<task>
+  <name>_task_worker_1</name>
+  <inFunction>main</inFunction>
+  <parent>main</parent>
+  <calledFunction>worker</calledFunction>
+  <core>2</core>
+  <inPar/>
+</task>
+<task>
+  <name>_task_worker_2</name>
+  <inFunction>main</inFunction>
+  <parent>main</parent>
+  <calledFunction>worker</calledFunction>
+  <core>3</core>
+  <inPar/>
+</task>
+<task>
+  <name>_task_worker_3</name>
+  <inFunction>main</inFunction>
+  <parent>main</parent>
+  <calledFunction>worker</calledFunction>
+  <core>4</core>
+  <inPar/>
+</task>
+<task>
+  <name>_task_queen_4</name>
+  <inFunction>main</inFunction>
+  <parent>main</parent>
+  <calledFunction>queen</calledFunction>
+  <core>5</core>
+  <inPar/>
+</task>
+<task>
+  <name>_task_queen_5</name>
+  <inFunction>main</inFunction>
+  <parent>main</parent>
+  <calledFunction>queen</calledFunction>
+  <core>6</core>
+  <inPar/>
+</task>
+<task>
+  <name>_task_super_queen_6</name>
+  <inFunction>main</inFunction>
+  <parent>main</parent>
+  <calledFunction>super_queen</calledFunction>
+  <core>7</core>
+  <inPar/>
+</task>
+<connection>
+  <ends>
+    <end task="_task_worker_0" type="chan"/>
+    <end task="_task_queen_4" type="chan"/>
+  </ends>
+  <name>cWorkerAtoQueenOne</name>
+</connection>
+<connection>
+  <ends>
+    <end task="_task_worker_1" type="chan"/>
+    <end task="_task_queen_4" type="chan"/>
+  </ends>
+  <name>cWorkerBtoQueenOne</name>
+</connection>
+<connection>
+  <ends>
+    <end task="_task_worker_2" type="chan"/>
+    <end task="_task_queen_5" type="chan"/>
+  </ends>
+  <name>cWorkerAtoQueenTwo</name>
+</connection>
+<connection>
+  <ends>
+    <end task="_task_worker_3" type="chan"/>
+    <end task="_task_queen_5" type="chan"/>
+  </ends>
+  <name>cWorkerBtoQueenTwo</name>
+</connection>
+<connection>
+  <ends>
+    <end task="_task_queen_4" type="chan"/>
+    <end task="_task_super_queen_6" type="chan"/>
+  </ends>
+  <name>cSuperQueenToQueenOne</name>
+</connection>
+<connection>
+  <ends>
+    <end task="_task_queen_5" type="chan"/>
+    <end task="_task_super_queen_6" type="chan"/>
+  </ends>
+  <name>cSuperQueenToQueenTwo</name>
+</connection>
+</taskgraph>

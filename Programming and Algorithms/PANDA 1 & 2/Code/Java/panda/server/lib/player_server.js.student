@@ -1,0 +1,41 @@
+'use strict'
+var net = require('net');
+var events = require('events');
+var util = require('util');
+
+
+function PlayerServer() {
+	var self = this;
+    self.server = net.createServer(function(player) {
+    	player.on('data', function(data) {
+    		self.onInput(player, data);
+    	});
+    });
+}
+util.inherits(PlayerServer, events.EventEmitter);
+
+
+PlayerServer.prototype.onInput = function(player, data) {
+    var obj = JSON.parse(data.toString());
+
+   	if(obj.type === "REGISTER"){
+   			this.emit('register', player, obj.student_id);
+        }
+    if(obj.type === "MOVE") {
+    		this.emit('move', player, obj);
+            console.log(obj);
+    }
+}
+
+
+PlayerServer.prototype.listen = function(port) {
+    this.server.listen(port);
+}
+
+
+PlayerServer.prototype.close = function() {
+    this.server.close();
+}
+
+
+module.exports = PlayerServer;

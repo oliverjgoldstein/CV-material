@@ -1,0 +1,126 @@
+import random
+a = -1
+B = -1
+# #
+
+memory_one = [
+a,a,a,a,1,1,a,a,a,a,
+a,a,a,a,1,1,a,a,a,a,
+a,a,a,a,1,1,a,a,a,a,
+a,a,a,a,1,1,a,a,a,a,
+a,a,a,a,1,1,a,a,a,a,
+a,a,a,a,1,1,a,a,a,a,
+a,a,a,a,1,1,a,a,a,a,
+a,a,a,a,1,1,a,a,a,a,
+a,a,a,a,1,1,a,a,a,a,
+a,a,a,a,1,1,a,a,a,a]
+
+degraded_memory_one = [
+a,a,a,a,1,1,a,a,a,a,
+a,a,a,a,1,1,a,a,a,a,
+a,a,a,a,1,1,a,a,a,a,
+a,a,a,a,1,1,a,a,a,a,
+a,a,a,a,1,1,a,a,a,a,
+a,a,a,a,1,1,a,a,a,a,
+a,a,a,a,1,1,a,a,a,a,
+a,a,a,a,1,1,a,a,a,a,
+a,a,a,a,1,1,a,a,a,a,
+a,a,a,a,1,a,a,a,a,a]
+
+memory_two = [
+a,a,a,a,a,a,a,a,1,1,
+a,a,a,a,a,a,a,a,1,1,
+a,a,a,a,a,a,a,a,1,1,
+a,a,a,a,a,a,a,a,1,1,
+a,a,a,a,a,a,a,a,1,1,
+a,a,a,a,a,a,a,a,1,1,
+a,a,a,a,a,a,a,a,1,1,
+a,a,a,a,a,a,a,a,1,1,
+a,a,a,a,a,a,a,a,1,1,
+a,a,a,a,a,a,a,a,1,1]
+
+degraded_memory_two = [
+a,a,a,a,a,a,a,a,1,1,
+a,a,a,a,a,a,a,a,1,1,
+a,a,a,a,a,a,a,a,1,1,
+a,a,a,a,a,a,a,a,1,1,
+a,a,a,a,a,a,a,a,1,1,
+a,a,a,a,a,a,a,a,1,1,
+a,a,a,a,a,a,a,a,1,1,
+a,a,a,a,a,a,a,a,1,1,
+a,a,a,a,a,a,a,a,1,1,
+a,a,a,a,a,a,a,a,a,1]
+
+
+memory_three = [
+1,1,a,a,a,a,a,a,a,a,
+1,1,a,a,a,a,a,a,a,a,
+1,1,a,a,a,a,a,a,a,a,
+1,1,a,a,a,a,a,a,a,a,
+1,1,a,a,a,a,a,a,a,a,
+1,1,a,a,a,a,a,a,a,a,
+1,1,a,a,a,a,a,a,a,a,
+1,1,a,a,a,a,a,a,a,a,
+1,1,a,a,a,a,a,a,a,a,
+1,1,a,a,a,a,a,a,a,a]
+
+degraded_memory_three = [
+1,1,a,a,a,a,a,a,a,a,
+1,1,a,a,a,a,a,a,a,a,
+1,1,a,a,a,a,a,a,a,a,
+1,1,a,a,a,a,a,a,a,a,
+1,1,a,a,a,a,a,a,a,a,
+1,1,a,a,a,a,a,a,a,a,
+1,1,a,a,a,a,a,a,a,a,
+1,1,a,a,a,a,a,a,a,a,
+1,1,a,a,a,a,a,a,a,a,
+a,1,a,a,a,a,a,a,a,a]
+
+memory_four = [
+a,a,a,a,a,a,a,a,a,a,
+a,a,a,a,a,a,a,a,a,a,
+a,a,a,a,a,a,a,a,a,a,
+a,a,a,1,1,1,a,a,a,a,
+a,a,a,1,1,1,a,a,a,a,
+a,a,a,1,1,1,a,a,a,a,
+a,a,a,a,a,a,a,a,a,a,
+a,a,a,a,a,a,a,a,a,a,
+a,a,a,a,a,a,a,a,a,a,
+a,a,a,a,a,a,a,a,a,a]
+
+degraded_memory_four = [
+a,a,a,a,a,a,a,a,a,a,
+a,a,a,a,a,a,a,a,a,a,
+a,a,a,a,a,a,a,a,a,a,
+a,a,a,1,1,1,a,a,a,a,
+a,a,a,1,1,a,a,a,a,a,
+a,a,a,1,1,1,a,a,a,a,
+a,a,a,a,a,a,a,a,a,a,
+a,a,a,a,a,a,a,a,a,a,
+a,a,a,a,a,a,a,a,a,a,
+a,a,a,a,a,a,a,a,a,a]
+
+
+memory_five = [
+1,1,1,a,1,1,1,1,a,a,
+1,1,1,a,1,1,1,1,a,a,
+1,1,1,a,1,1,1,1,a,a,
+1,1,1,a,1,1,1,1,a,a,
+1,1,1,a,1,1,1,1,a,a,
+1,1,1,a,1,1,1,1,a,a,
+1,1,1,a,1,1,1,1,a,a,
+1,1,1,a,1,1,1,1,a,a,
+1,1,1,a,1,1,1,1,a,a,
+1,1,1,a,1,1,1,1,a,a]
+
+degraded_memory_five = [
+1,1,1,a,1,1,1,1,a,a,
+1,1,1,a,1,1,1,1,a,a,
+1,1,1,a,1,1,1,a,a,a,
+1,1,1,a,1,1,1,1,a,a,
+1,1,1,a,1,1,1,1,a,a,
+1,1,1,a,1,1,1,1,a,a,
+1,1,1,a,1,1,1,1,a,a,
+1,1,1,a,1,1,1,1,a,a,
+1,1,1,a,1,1,1,1,a,a,
+1,1,1,a,1,1,1,1,a,a]

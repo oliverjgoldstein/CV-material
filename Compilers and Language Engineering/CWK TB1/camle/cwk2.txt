@@ -1,0 +1,256 @@
+{------------------------------------------------------------
+ -- Language Engineering: COMS22201
+ -- Assessed Coursework 2: CWK2
+ -- Question 3: Axiomatic Semantics of While with read/write
+ ------------------------------------------------------------
+ -- This stub file gives two code fragments (from the test7.w 
+ -- source file used in CWK1) that you will need to annotate 
+ -- with tableau correctness proofs using the partial axiomatic 
+ -- semantics extended with axioms for read/write statements.
+ -- 
+ -- To answer this question, upload one file "cwk2.w" to the 
+ -- "CWK2" unit component in SAFE by midnight on 01/05/2016.
+ --
+ -- For further information see the brief at the following URL:
+ -- https://www.cs.bris.ac.uk/Teaching/Resources/COMS22201/cwk2.pdf
+ ------------------------------------------------------------}
+
+
+{------------------------------------------------------------
+ -- Part A)
+ --
+ -- provide a tableau-based partial correctness proof
+ -- of the following program (for computing factorials) 
+ -- with respect to the given pre- and post-conditions
+ -- by completing the annotation of the program with 
+ -- logical formulae enclosed within curly braces:
+ ------------------------------------------------------------}
+
+{
+
+-> I use as an implication sign
+
+}
+
+
+
+{ head(IN) = n }
+
+write('Factorial calculator'); 
+
+writeln;
+
+write('Enter number: ');
+
+read(x);
+
+{ x = n }
+
+{ IN = tail(IN) }
+
+write('Factorial of '); 
+
+write(x); 
+
+write(' is ');
+
+y := 1; 
+
+{ y = 1 & x = n }
+
+{
+1. y = 1 given
+2. x = n given
+3. n > 0 assume
+4. x > 0 sub 2 in lhs of 3
+5. n! = n! by reflexivity of =
+6. x! = n! sub 2 in las of 5
+7. 1*x! = x! by def of multiplication
+8. x! = yx! sub 1 in the of 6.
+9. n! = yx! sub 7 in rhs of 5
+10. x>0 sub 2 in lhs of 3 
+}
+
+{ x > 0 -> y*x! = n! }
+
+while !(x=1) do (
+
+{ x > 0 -> y*x! = n! & !(x=1) }
+
+{
+1. n!=yx! given
+2. x>0    given
+3. ¬(x=1) given
+4. x>1 from 2 and 3
+5. x!=x(x-1)! by defn of fact using 2
+6. n!=y(x(x-1)!) sub 5 in rhs of 1
+7. n!=(y*x)(x-1)! by associativity of mult
+8. x-1>0 dec both sides of 4 
+}
+
+{ x - 1 > 0 -> n! = y*x*(x-1)! & !(x=1) }
+
+  y := y * x;
+
+{ x - 1 > 0 -> n! = y(x-1)! }
+
+
+  x := x - 1
+
+
+{ x > 0 -> n! = yx! }
+
+);
+
+{ x > 0 -> n! = yx! & !!(x=1) }
+{
+1. n!=yx! given
+2. x>0 given
+3. ¬¬(x=1) given
+4. x=1 ¬¬ elimination on 3
+5. x!=1!=1 by defn of fac using 4
+6. n!=y1 sub 5 in rhs of 1
+7. n!=y by defn of mult
+8. y=n! by symmetry of =
+}
+{ y = n! }
+
+{ append(OUT,[y]) = append(_,[n!]) }
+
+write(y);
+
+{ OUT = append(_ , [n!]) }
+{ append(OUT,[‘\n’]) = append(_,[n!,_]) }
+
+
+writeln;
+
+{ OUT=append(_ , [n!,_]) }
+{ append(OUT, [‘\n’]) = append(_,[n!,_,_]) }
+
+writeln;
+
+{ OUT = append(_, [n!,_,_]) }
+
+{------------------------------------------------------------
+ -- Part B)
+ --
+ -- provide a tableau-based partial correctness proof
+ -- of the following program (for computing exponents) 
+ -- with respect to suitable pre- and post-conditions:
+ ------------------------------------------------------------}
+{ n = head(IN) & m = head(tail(IN)) }
+
+write('Exponential calculator'); writeln;
+write('Enter base: ');
+read(base);
+
+{ base = n & IN = tail(IN) }
+
+if 1 <= base then (
+
+{ base = n head(IN) = m base >= 1}
+{
+1. base = n given
+2. head(IN) = m given
+3. base >= 1 given
+4. n >= 1 substitute 3 in lhs of 1
+}
+{ base = n & n >= 1 }
+
+  write('Enter exponent: ');
+{ base = n & head(IN) = m & n>= 1 }
+  read(exponent);
+{ exponent = m & base = n & n >= 1 & m >= 1 }
+
+  num := 1;
+{ exponent = m & base = n & n >= 1 & m >= 1 & num = 1 }
+count := exponent;
+
+{ exponent = m & base = n & n >= 1, m >= 1 & num = 1 }
+{
+1. exponent = m given
+2. count = exponent given
+3. count = m as sub 2 into 1
+}
+{ exponent = m & base = n & n >= 1, m >= 1 & num = 1 & count = m }
+
+{ count >= 0 -> base^exponent = num*base*count & base = n & exponent = m }
+
+while 1 <= count do (
+
+{ count >= 0 -> base ^ exponent = num*base^count & base = n & exponent = m & count >= 1 }
+{
+1. count >= 0 -> base^exponent = num*base^count given
+2. count >= 1 given
+3. count -1 >= 0 subtract both side of 2 by 1
+4. base ^ exponent = (num*base)*base^(count-1)
+}
+ 
+{ base ^ exponent = num * base ^ (1 + count - 1) & !(count <= 1) }
+
+{count>=0 -> base^exponent = num * base ^ count & base = n & exponent = m & count >= 1}
+
+{
+1. by definition of (<=) !(count <= 1) is equivalent to count >= 1
+2. count    >= 1 -> base ^ exponent = num*base^count given
+3. count-1  >= 0 subtract both sides of 2 by constant 1
+4. base^exponent = (num*base)*base^(count-1)
+}
+
+{(count - 1) >= 0 -> base^exponent = (num*base)*base^(count-1) & base = n & exponent = m}
+
+    num := num * base;
+
+{(count - 1) >= 0 -> base ^ exponent = num * base ^ (count - 1) & base = n & exponent = m }
+
+    count := count - 1
+
+{ count >= 0 -> base ^ exponent = num * base ^ (count) & base = n & exponent = m }
+
+  );
+
+
+
+{ count >= 0 -> base^exponent = num*base^count & base = n & exponent = m & !(count >= 1)}
+{ 
+  1. count >= 0
+  2. base = n given
+  3. exponent = m given
+  4. !(count >= 1) given
+  5. count < 1 from 4 and definition of inequality
+  6. count = 0 from substitution from equation 5 into equation 1 using upper and lower bounds defining count as 0. i.e. if 0 <= x < 1 then x = 0 for all x
+  7. count >= 0
+  8. num*n^0 = n^m sub 2,3 into equation 7
+  9. num = n^m as a consequence of equation 8.
+}
+{num=n^m}
+
+{ num = base ^ exponent : ^ is the power operator }
+
+  write(base); write(' raised to the power of '); write(exponent); write(' is ');
+{ append(OUT,[num]) = append(_,[n^m]) }
+  write(num)
+{ OUT = append(_,[n^m]) }
+
+{ base = n }
+
+) else (
+
+{ base < 1 & base = n & head(IN) = m }
+
+  write('Invalid base '); 
+
+{ append(OUT,[base]) = append(_,[n]) }
+
+write(base)
+
+{ OUT = append(_,[n]) }
+{ base = n }
+
+);
+}
+
+{ ( n > 0 & m > 0 ) -> OUT = append(_,[n^m]) }
+{ ( n > 0 & m > 0 ) -> OUT = append(_,[n^m]) }
+writeln

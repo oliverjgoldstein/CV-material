@@ -1,0 +1,2 @@
+1. Explanation of write.
+2. Do we need to implement read.

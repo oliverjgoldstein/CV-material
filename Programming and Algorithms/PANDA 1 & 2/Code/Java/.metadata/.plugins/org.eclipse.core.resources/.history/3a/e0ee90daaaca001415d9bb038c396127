@@ -1,0 +1,16 @@
+package windowtest;
+
+import javax.swing.JPanel;
+
+public class windowtests extends JPanel
+{
+
+	/**
+	 * Create the panel.
+	 */
+	public windowtests()
+	{
+
+	}
+
+}

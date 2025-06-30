@@ -1,0 +1,9 @@
+eclipse.preferences.version=1
+environment/project/com.xmos.cdt.toolchain.507109281/XDE_BUILD/delimiter=\:
+environment/project/com.xmos.cdt.toolchain.507109281/XDE_BUILD/operation=append
+environment/project/com.xmos.cdt.toolchain.507109281/XDE_BUILD/value=true
+environment/project/com.xmos.cdt.toolchain.507109281/XMOS_MODULE_PATH/delimiter=\:
+environment/project/com.xmos.cdt.toolchain.507109281/XMOS_MODULE_PATH/operation=append
+environment/project/com.xmos.cdt.toolchain.507109281/XMOS_MODULE_PATH/value=/Users/Oliver/Documents/Computer Science/Year 2/Concurrency/COMS20001/game_of_life
+environment/project/com.xmos.cdt.toolchain.507109281/append=true
+environment/project/com.xmos.cdt.toolchain.507109281/appendContributed=true

@@ -1,0 +1,46 @@
+# Local environment files may contain credentials.
+.env
+.env.*
+!.env.example
+
+# Private keys and machine-local authentication data must stay outside Git.
+**/.ssh/
+**/.gnupg/
+**/.aws/
+**/.azure/
+**/.config/gcloud/
+**/.config/gh/hosts.yml
+**/.docker/config.json
+**/.git-credentials
+**/.netrc
+**/.authinfo
+**/.npmrc
+**/.pypirc
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+credentials.json
+client_secret*.json
+secrets.*
+!secrets.example.*
+
+# Generated Python bytecode can retain secrets and local absolute paths.
+__pycache__/
+*.py[cod]
+*$py.class
+
+# macOS metadata is local-only.
+.DS_Store
+
+# Historical third-party toolchains and generated dependency trees are large,
+# obsolete, and may contain machine-specific build paths.
+Concurrency/TB2/Concurrency - OS/gcc-arm-none-eabi-5_2-2015q4/
+**/panda2cw6/ant/
+**/panda2cw6:MiniMax/ant/
+**/node_modules/
+
+# Repeated coursework training-image corpora are kept locally, not published.
+Image Processing/Lab 4 - Summative*/NegativeImages/negatives/

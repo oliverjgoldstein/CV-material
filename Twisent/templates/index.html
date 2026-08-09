@@ -1,0 +1,362 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+<meta http-equiv = "pragma"  content="no-cache">
+<meta http-equiv = "expires" content="-1">
+
+<title> Twisent </title>
+
+<meta name = "viewport"     content = "width=device-width, initial-scale=1, maximum-scale=1" />
+<meta name = "description"  content = " A marketing tool to find dissatisfied consumers/competitors. A way to people who you dislike or disagree with." />
+<meta name = "keywords"     content = "Twitter, Sentiment, Analysis, Twisent, Digital, Marketing, Debate, Realtime"/>
+<meta name = "author"       content = "Oliver Goldstein" />
+
+<!-- JavaScript libraries: -->
+
+<script type = "text/javascript" src = "./static/js/libraries/jquery-2.1.4.js"       ></script>
+<script type = "text/javascript" src = "./static/js/libraries/jquery-ui.js"          ></script>
+
+<!-- CSS Stylesheets -->
+
+<style type = "text/css">
+@font-face {
+    font-family: "proxima_nova_ltregular";
+    font-weight: normal;
+    font-style:  normal;
+    src:url("./static/proximanovalight-webfont.ttf") format("truetype");
+}
+</style>
+
+<link rel = "stylesheet"    href = "./static/css/index.css">
+<link rel = "stylesheet"    href = "./static/css/reset.css">
+<link rel = "stylesheet"    href = "./static/css/jquery-ui.css">
+<link rel = "icon"          href = "./static/favicon.ico" type = "image/x-icon">
+
+<!-- User javascript: -->
+
+<script type = "text/javascript" src = "./static/js/Json_Decode.js"                  ></script>
+<script type = "text/javascript" src = "./static/js/On_Click_Init_Ajax.js"           ></script>
+<script type = "text/javascript" src = "./static/js/Ajax_Request.js"                 ></script>
+<script type = "text/javascript" src = "./static/js/Page_Startup_Settings.js"        ></script>
+<script type = "text/javascript" src = "./static/js/Timer_And_Ajax_Call.js"          ></script>
+<script type = "text/javascript" src = "./static/js/Colour_Checkboxes.js"            ></script>
+<script type = "text/javascript" src = "./static/js/More_Options_Window_Slider.js"   ></script>
+<script type = "text/javascript" src = "./static/js/Follower_Slider.js"              ></script>
+<script type = "text/javascript" src = "./static/js/oEmbed_Tweet.js"              ></script>
+<script>
+
+
+// document.write("HELLO");
+</script>
+</head>
+<body>
+
+
+
+<!-- Start of wrapper -->
+<div id = "wrapper">
+    <div id="page-one">
+
+            <div id = "logo-wrapper">
+                <div id = "name">
+                    <span class = "inline" style = "color:#989898;">T</span>
+                    <span class = "inline" style = "color:#768188;">w</span>
+                    <span class = "inline" style = "color:#4c606d;">i</span>
+                    <span class = "inline" style = "color:#284151;">s</span>
+                    <span class = "inline" style = "color:#4c606d;">e</span>
+                    <span class = "inline" style = "color:#768188;">n</span>
+                    <span class = "inline" style = "color:#989898;">t</span>
+                </div>
+
+                <img src = "./static/img/app-logo.png" style = "border-radius:100px;" id = "logo"/>
+
+            </div>
+
+
+                        <div id = "text-box-wrapper">
+                    <input type = "text" id = "keywords" placeholder = "Type Something" value = "" maxlength = "30"/>
+                </div>
+
+                <div id = "button-holder">
+
+
+                    <div id = "find-people-text">
+                        Find People Who:
+                    </div>
+
+                    <table id = "sentiment-options">
+                        <tr>
+                        <td>
+                        <div id = "positivity-text">Like: </div>
+                        </td>
+                        <td>
+                        <input type = "checkbox" id = "positivity" name = "positivity" checked/>
+                        </td>
+                        </tr>
+                        <tr>
+                        <td>
+                        <div id = "negativity-text">Dislike: &nbsp;&nbsp;&nbsp;</div>
+                        </td>
+                        <td>
+                        <input type = "checkbox" id = "negativity" name = "negativity" checked/>
+                        </td>
+                        </tr>
+                    </table>
+
+                    <div id = "subject">
+                        <div id = "type-something">
+                            Type Something
+                        </div>
+                    </div>
+
+
+                    <div id = "right-hand-text">
+                        <button class = "go" id = "init-ajax"> Find tweeters! </button>
+
+                        <div class = "filter" id = "next-page">
+                            Advanced Options
+                        </div>
+                    </div>
+
+                    <div id = "time"></div>
+                </div>
+            <div id = "about-wrapper">
+                <div id = "about-text">
+                <div class = "desc-text"><span class = "green"><b><i>Note:</i></b></span><i><b> This is a demonstration:</b> For more tweets, higher accuracy analyses, different languages, time scales and lots more contact <a href = "http://www.oliverjgoldstein.com" class = "no-decoration">Oliver</a> or <a href = "http://users.ox.ac.uk/~hert4647/" class = "no-decoration">Mahmoud</a>.</i></div> <br />
+                <div class = "desc-text"><span class = "green"><b>Use Case?</b> </span> Find people who dislike or like your brand/products. <br /> <br /></div>
+                    <b>A four line Tutorial:</b> <br /> <br />
+                    <table style = "border:none;margin-bottom:60px;margin-left:-2px;">
+                        <tr>
+                        <td>
+                        <span class = "green">1. </span></td><td>Type your search query into the box above.</td>
+                        </tr>
+                        <tr>
+                        <td>
+                        <span class = "green">2. </span></td><td> Select advanced options and choose filters for your tweets.</td>
+                        </tr>
+                        <tr>
+                        <td>
+                        <span class = "green">3. </span></td><td> Click find tweeters.</td>
+                        </tr>
+                        <tr>
+                        <td>
+                        <span class = "green">4. </span></td><td> Click on a tweet to reply.</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+        <pre>
+            <div id = "status-text"></div>
+            <div id="reload"></div>
+        </pre>
+    </div>
+</div>
+<!-- End of wrapper -->
+
+<div id="page-two">
+    <div id = "filter-text">Filter Tweets</div>
+    <div id = "filter-form-wrapper">
+        <a href="#" id  = "show-page-one"><b>Back To Search</b></a>
+<br />
+        <div class      = "header-text" style = "margin-top:15px;"     >Tweet Timeline</div>
+
+        <div id         = "live-text"       >Live Tweets:               </div><input type = "checkbox" id = "live" name = "live" checked/> <br />
+        <div id         = "past-week-text"  >Tweets From The Past: </div><input type = "checkbox" id = "past-week" name = "past-week" checked/> <br />
+        <input type     = "text" id = "past-day-count" readonly />
+        <br />
+        <div id         = "day-count"></div>
+        <div id         = "slider-days"    ></div>
+        <br />
+        <div class      = "header-text"     >What's on your screen</div>
+        <div id         = "user-text"       >User Info:     </div><input type = "checkbox" id = "user-box"          checked/> &nbsp;
+        <div id         = "tweet-text"      >Tweet:         </div><input type = "checkbox" id = "tweet-box"         checked/> &nbsp;
+        <div id         = "attitude-text"   >Attitude:      </div><input type = "checkbox" id = "attitude-box"      checked/> &nbsp; <br />
+        <div id         = "location-text"   >Location:      </div><input type = "checkbox" id = "location-box"      checked/> &nbsp;
+        <div id         = "date-text"       >Date Posted:   </div><input type = "checkbox" id = "date-box"          checked/> &nbsp;
+        <div id         = "re-count-text"   >Retweet Count: </div><input type = "checkbox" id = "retweet-box"       checked/> <br />
+        <br />
+        <div class      = "header-text"     >Tweet Influence</div>
+        <div id         = "follower-text"   >Number of Followers of Tweeter: </div>
+        <input type     = "text" id = "follower-number" readonly />
+        <div id         = "slider-range"    ></div>
+        <div id         = "upper-bound"     ></div>
+        <div id         = "lower-bound"     ></div>
+        <div id         = "retweet-text"    >Disable Re-Tweets: </div><input type = "checkbox" id = "retweets" name = "retweets" />
+        <br />
+        <br />
+        <div class      = "header-text"     ><u>Advanced Queries: Examples</u></div>
+        <br />
+        <table id = "advanced-operators">
+        <tr>
+        <td>
+        <b>Operator:</b>
+        </td>
+        <td>
+        <b>Finds tweets...</b>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        watching now
+        </td>
+        <td>
+        containing both “watching” and “now”. This is the default operator.
+        </td></tr>
+        <tr>
+        <td>
+        “happy hour”
+        </td>
+        <td>
+        containing the exact phrase “happy hour”.
+        </td>
+        </tr>
+
+        <tr>
+        <td>
+            love OR hate
+        </td>
+        <td>
+            containing either “love” or “hate” (or both).
+        </td>
+        </tr>
+        <tr>
+        <td>
+            beer -root
+        </td>
+        <td>
+            containing “beer” but not “root”.
+        </td>
+        </tr>
+
+        <tr>
+        <td>
+            #haiku
+        </td>
+        <td>
+            containing the hashtag “haiku”.
+        </td>
+        </tr>
+
+
+
+
+
+        <tr>
+        <td>
+            from:interior
+        </td>
+        <td>
+            sent from Twitter account “interior”.
+        </td>
+        </tr>
+
+
+
+
+
+
+        <tr>
+        <td>
+            list:NASA/astronauts-in-space-now
+        </td>
+        <td>
+            sent from a Twitter account in the NASA list astronauts-in-space-now
+        </td>
+        </tr>
+
+
+
+
+        <tr>
+        <td>
+            a Tweet authored in reply to Twitter account “NASA”.
+        </td>
+        <td>
+            to:NASA
+        </td>
+        </tr>
+
+        <tr>
+        <td>
+            politics filter:safe
+        </td>
+        <td>
+            containing “politics” with Tweets marked as potentially sensitive removed.
+        </td>
+        </tr>
+
+
+
+        <tr>
+        <td>
+            puppy filter:media
+        </td>
+        <td>
+            containing “puppy” and an image or video.
+        </td>
+        </tr>
+
+
+
+
+        <tr>
+        <td>
+            hilarious filter:links
+        </td>
+        <td>
+            containing “hilarious” and linking to URL.
+        </td>
+        </tr>
+
+
+
+        <tr>
+        <td>
+            puppy filter:native_video
+        </td>
+        <td>
+            containing “puppy” and an uploaded video, Amplify video, Periscope, or Vine.
+        </td>
+        </tr>
+
+
+
+
+        <tr>
+        <td>
+            traffic ?
+        </td>
+        <td>
+            containing “traffic” and asking a question.
+        </td>
+        </tr>
+
+
+
+
+        <tr>
+        <td>
+            puppy filter:images
+        </td>
+        <td>
+            containing “puppy” and links identified as photos, including third parties such as Instagram.
+        </td>
+        </tr>
+        </table>
+
+    </div>
+</div>
+
+
+
+<div id = "bottom-footer">
+    <div id = "center-text">
+        Created By <a href = "http://www.oliverjgoldstein.com" class = "no-decoration">Oliver J Goldstein</a> & <a href = "http://users.ox.ac.uk/~hert4647/" class = "no-decoration">Mahmoud Ghanem</a>
+    </div>
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,108 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}          
+\usepackage{graphicx}
+\usepackage{amsthm, amsmath, amssymb}
+\usepackage{setspace}\onehalfspacing
+\usepackage[loose,nice]{units} 
+\usepackage{titlesec}
+\setlength{\parindent}{4em}
+\setlength{\parskip}{1em} 
+
+\title{Advanced Algorithms Coursework}
+\author{Oliver Goldstein (og14775)}
+\date{April 2017}
+
+\begin{document}
+\maketitle
+
+
+\section{\underline{Problem 1}}
+\subsection{\underline{Part 1}}
+\begin{flushleft}
+\par 
+Let $A[1,...,n]$ and $B[1,...,n]$ be the number of occurrences of item $i$ in two streams respectively. The algorithm should achieve a $(\epsilon, \delta)$ approximation $s.t.$ 
+$$ \Pr[Output \in (1 - \epsilon, 1 + \epsilon) * Exact] \geq 1 - \delta $$
+
+$N.B.$ Whilst the Count-Min Sketch procedure includes turnstile type functionality, by only using the insert operation, we consider the cash register model only.
+
+\textbf{\underline{Proposed Algorithm}}
+
+$1.$ Initialise two Count-Min Sketch Tables $At, Bt$. \\*
+$2.$ While item $i$ from stream $A$ or $B$ arrives: \\*
+$3.$ 	\quad\quad Insert $i$ into table A or B, respective to the stream. \\*
+$4.$ Return X = $\sum_{i=1}^{n} queryA(i) * queryB(i)$ \\*
+$\linebreak[1]$
+$N.B.$ $n$ is defined above and $queryA(i)$ translates as query table A for item i.
+
+\textbf{\underline{Brief Analysis}}
+
+The Count-Min Sketch provides us with the following guarantees, such that $X\textsubscript{1}$ is the first moment of the set X and mx is the true number of instances counted.
+\begin{center}
+$1. \Pr[m'x \geq mx + \epsilon * A\textsubscript{1}] \leq e^{-d} \leq \delta $ \\*
+$2. \Pr[m'x \geq mx + \epsilon * B\textsubscript{1}] \leq e^{-d} \leq \delta $
+\end{center}
+
+\clearpage
+
+The error is $n * (\epsilon * A\textsubscript{1} * \epsilon * B\textsubscript{1}  + ... + \epsilon * A\textsubscript{1} * \epsilon * B\textsubscript{1})$
+which is equal to $n * \epsilon * (A\textsubscript{1} * B\textsubscript{1})$
+$\linebreak[1]$
+$\epsilon$ is $ 0 \leq \epsilon \leq 1$ so $n * \epsilon$ is $\leq \epsilon$. This implies the error is upper bounded by $\epsilon * (A\textsubscript{1} * B\textsubscript{1})$
+$\linebreak[1]$
+
+\subsection{\underline{Part 2}}
+
+\textbf{\underline{Space Complexity}}
+
+In total, two Count Min Sketches are also included, one for each stream. The space complexity depends on $\epsilon$ and $\delta$. In addition, for each row in each Count-Min Table, a hash function must be stored. I will denote this as a constant $k$. \\*
+$\linebreak[1]$
+In particular the space complexity is: $$O(log(1/\delta) * e/\epsilon * k * 2)$$
+
+\textbf{\underline{Proof of Correctness}}
+
+The correct answer is achieved if the algorithm returns a valid $(\epsilon, \delta)$ approximation. On each iteration of the summation two query actions are performed, each with error at most: $\epsilon * A\textsubscript{1}$. The probability that the result has less error than this is at least: $1 - \delta$
+The probability of it maintaining an error deemed correct for all iterations is $\sum_{i=1}^{n} NoErrorA \wedge NoErrorB $
+
+This expands to $1 - 2 * \delta + \delta^2$ and as $\delta > \delta^2$ as $0 \leq \delta \leq 1$.
+The probability for no errors to occur, exceeding the $\epsilon$ threshold established is $(1 - 2 * \delta + \delta^2)^n$  
+
+\section{\underline{Problem 2}}
+\subsection{\underline{Part 1}}
+$\mathcal{H}$ is not pairwise independent as the size of a is less than the number of different hash functions, due to the pigeonhole principle, there will be collisions.........
+
+The notion of universality is captured by within class independence. I.e. Given any two inputs, their image is randomly distributed.
+
+Working from the definition of independence, starting with $x\textsubscript{1}, x\textsubscript{2} \in \{0,1\}^m$   \\*
+$\linebreak[1]$
+$h(x\textsubscript{1}) = a(h)x\textsubscript{1}$ \\*
+$h(x\textsubscript{2}) = a(h)x\textsubscript{2}$
+
+$\Pr\forall h \in \mathcal{H} [h(x\textsubscript{1}) = h(x\textsubscript{2})]$ \\*
+$ = \Pr\forall h \in \mathcal{H} [\forall i = 1, ... , n y\textsubscript{i} = y'\textsubscript{i}]$ \\*
+$ = \Pr\forall h \in \mathcal{H} [\forall i = 1, ... , n \sum_{j=1}^{m} a(h)\textsubscript{i,j}X\textsubscript{j}  = \sum_{j=1}^{m} a(h)\textsubscript{i,j}X'\textsubscript{j}  ]$ \\*
+$ = \Pr\forall h \in \mathcal{H} [\forall i = 1, ... , n \sum_{j=1}^{m} h\textsubscript{i-j+m}X\textsubscript{j}  = \sum_{j=1}^{m} h\textsubscript{i-j+m}X'\textsubscript{j}  ]$
+
+The rows of the matrix are not independent and so must be accounted for. At this point the rows of the matrix formed by iterating over h are:
+
+\[
+H=
+  \begin{bmatrix}
+  h\textsubscript{m} & h\textsubscript{m-1} & h\textsubscript{m-2} & ... & h\textsubscript{2} & h\textsubscript{1} \\
+  h\textsubscript{m+1} & h\textsubscript{m} & h\textsubscript{m-1} & ... & h\textsubscript{3} & h\textsubscript{2} \\
+  ... & ... & ... & ... & ... & ... \\
+  h\textsubscript{m+n} & h\textsubscript{m+n-1} & h\textsubscript{h+m-2} & ... & h\textsubscript{n+1} & h\textsubscript{n}
+  \end{bmatrix}
+\]
+
+Each hash function is independent of one another and each row of the "matrix" formed by H, is pairwise independent with any other row as, at the least, it has an additional bit of the hash function which is excluded from any other hash function. As we are working in GF(2), the probability of the resulting output being identical to the output with an independently chosen hash function, is precisely half.
+
+$ \prod_{i=1}^{n} \Pr\forall h \in \mathcal{H} [\sum_{j=1}^{m} h\textsubscript{i - j + m}X\textsubscript{j} = \sum_{j=1}^{m} h\textsubscript{i - j + m}X'\textsubscript{j}]$
+
+$ = \prod_{i=1}^{n} 1 / 2$
+$ = 2 ^{-n} $
+
+
+
+
+\end{flushleft}
+\end{document}

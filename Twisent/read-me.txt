@@ -1,0 +1,4 @@
+To Compile run the RUN-ME.sh file with:
+first chmod +x RUN-ME.sh
+
+./RUN-ME.sh

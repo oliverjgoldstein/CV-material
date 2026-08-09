@@ -1,0 +1,45 @@
+{
+  "games" : {
+    "5": 5,
+    "6": 1
+  },
+
+
+  "players":
+  {
+
+    "om0000": [
+      {
+        "game_id": 5,
+        "colour": "Red"
+      },
+
+      {
+        "game_id": 5,
+        "colour": "Blue"
+      },
+
+      {
+        "game_id": 5,
+        "colour": "Green"
+      },
+
+      {
+        "game_id": 5,
+        "colour": "Yellow"
+      },
+
+      {
+        "game_id": 5,
+        "colour": "White"
+      }
+    ],
+
+    "ax1234": [
+      {
+        "game_id" : 5,
+        "colour" : "Black"
+      }
+    ]
+  }
+}

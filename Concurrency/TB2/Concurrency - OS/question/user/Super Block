@@ -1,0 +1,82 @@
+Super Block
+
+    
+A superblock is a record of the characteristics of a filesystem, including its size, the block size, the empty and the filled blocks and their respective counts, the size and location of the inode tables, the disk block map and usage information, and the size of the block groups.
+
+typedef struct super_block {
+    int file_system_size;
+    uint32_t block_size;
+    inode* inode_array[SIZE];
+} super_block;
+
+typedef struct mapping {
+    char* file_name;
+    uint32_t inode_number;
+}
+
+typedef struct directory {
+    mapping directory_info[ MAX_DIR_NUMBER ];
+} directory;
+
+typedef struct fdt {
+    uint32_t inode_number;
+    int descriptor;
+    int flag;
+    void* rw_pointer;    
+    char* file_name;
+} fdt;
+
+// Gives file sizes of up to 4TB.
+typdef struct inode {
+    int       size_of_file;
+    int       UID;
+    int       GID;
+    int       mode;
+    uint32_t  timestamp;
+    inode*    indirect_block[3];
+    uint32_t  direct_block[12];
+    int link_num;
+} super_block;
+
+directory* working_directory;
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+File open:
+takes name of the file and whether you want read/write.
+makes new entry in file descriptor table.
+
+file creat: 
+assigns inode number and name
+
+File read:
+1. Find entry given by fd.
+2. Increment read pointer by 4.
+3. Retrieve the byte sequence and store it in x:
+
+File Write:
+update allocation state
+file meta data
+file data
+
+SETUP:
+
+In one terminal & type here:
+
+nc -l 127.0.0.1 1235
+
+C FILES:
+
+Include disk.h
+
+MAKEFILES:
+
+uncomment in Makefile: QEMU_UART += telnet:127.0.0.1:1235,server
+
+In another:
+
+
+
+each command and response is 1-line of ASCII text terminated by an EOL character,
+
+

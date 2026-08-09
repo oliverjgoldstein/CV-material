@@ -1,0 +1,1 @@
+This is an extremely basic library in Haskell written as part of a small independent project.

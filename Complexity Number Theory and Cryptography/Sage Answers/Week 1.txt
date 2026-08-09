@@ -1,0 +1,84 @@
+A linear time algorithm (xrange so does not need to create a whole array):
+
+def MyPowMod(a, b, c):
+    accumulator = 1
+    for i in xrange (b):
+        accumulator = accumulator * a
+        accumulator = accumulator % c
+    return accumulator
+
+
+How do we achieve b in a binary format.
+
+The number only gets twice as big 
+
+def MyPowMod(a, b, c):
+
+
+(a^b) = a^(b0 + 2b1 + .... (2 ^ i)bi + ....)
+
+This is because b can be written in a binary form
+
+I use SIGMA for the sum.
+I use PI for the series of multiplying.
+
+    = a^SIGMA(2^(i)bi)
+    = PI(a^(2^i)bi)
+    = PI[ (a^(2^i)) if bi = 1 and apply the modulo operation.
+        [  1        if bi = 0.
+
+Let's keep track of this variable and continue multiplying it.
+
+// def MyPowMod(a, b, n):
+//    if n == 0: 
+//        return 1
+//    elif (n % 2 == 0):
+//        return MyPowMod(a^2, b, n/2)
+//    else:
+//        return a*MyPowMod(a^2, b, n-1)
+
+def MyPowMod(a, b, c):
+    acc = 1
+    temp = a
+    while(b > 0):
+        if b % 2 == 1:
+            acc = (acc * temp) % c
+        temp = (temp*temp) % c
+        b = b // 2
+    return acc
+
+MyPowMod(5385892759875,409784891274,5427528967528756) = 304633414115229
+
+def MyGCD(a,b):
+    if b == 0:
+       return a
+    else:
+        return MyGCD(b, a % b)
+
+MyGCD(593085902352,8752389742891) = 1
+
+def MyLCM(a, b):
+    return (a*b)/MyGCD(a,b)
+
+MyLCM(55902352, 8381902352) = 29285503481945744
+
+4)
+
+L =  range(1,2000,2)
+
+L.reverse()
+
+len(L)
+
+L.append(7)
+L.append(19)
+
+L = Set(L)
+
+The cardinality of the set is 1000
+
+5)
+
+MyXGCD(a,b)
+
+You can do this with the algorithm formally described in david's notes. Use q r a and b and construct the table, stopping when the table hits 0.

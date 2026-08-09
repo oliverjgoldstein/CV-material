@@ -1,0 +1,41 @@
+num_excitatory_neurons = 1;
+num_inhibitatory_neurons = 0;
+random_init_e = rand(num_excitatory_neurons ,1);
+random_init_i = rand(num_inhibitatory_neurons, 1);
+
+
+a_vars = [0.02, 0.08]
+recovery_a = [a_vars[0]*ones(num_excitatory_neurons, 1); a_vars[0] + a_vars[1] * random_init_i];
+
+b_vars = [0.2, 0.25, 0.05]
+b = [b_vars[0] * ones(num_excitatory_neurons, 1); b_vars[1]-b_vars[2]*random_init_i];
+
+c_vars = [-65, 15, 2]
+c = [c_vars[0] + c_vars[1] * random_init_e .^ c_vars[2]; c_vars[0] * ones(num_inhibitatory , 1)];
+
+d_vars = [8, 6, 2]
+spike_reset_d = [d_vars[0] - d_vars[1] * random_init_e .^ d_vars[2]; d_vars[2] * ones(num_inhibitatory , 1)];
+
+S_vars = [0.5]
+S = [S_vars[0] * rand(num_excitatory_neurons + num_inhibitatory , num_excitatory_neurons ), -rand(num_excitatory_neurons +num_inhibitatory , num_inhibitatory ) ];
+
+v_vars = [-65]
+v = v_vars[0] * ones(num_excitatory_neurons + num_inhibitatory, 1); % Initial values of v
+
+
+
+u = b .* v; % Initial values of u
+
+firings=[]; % spike timings
+for t=1:1000 % simulation of 1000 ms
+I=[5*randn(num_excitatory_neurons ,1);2*randn(num_inhibitatory , 1)]; % thalamic input
+fired=find(v>=30); % indices of spikes
+firings=[firings; t+0*fired,fired];
+v(fired)=c(fired);
+u(fired)=u(fired)+d(fired);
+I=I+sum(S(:,fired),2);
+v=v+0.5*(0.04*v.^2+5*v+140-u+I); % step 0.5 ms
+v=v+0.5*(0.04*v.^2+5*v+140-u+I); % for numerical
+u=u+a.*(b.*v-u); % stability
+end;
+plot(firings(:,1),firings(:,2));

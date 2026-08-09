@@ -1,0 +1,684 @@
+// COMS22201: IR tree construction
+
+import java.util.*;
+import java.io.*;
+import java.lang.reflect.Array;
+import org.antlr.runtime.*;
+import org.antlr.runtime.tree.*;
+
+public class HIrt
+{
+// The code below is generated automatically from the ".tokens" file of the 
+// ANTLR syntax analysis, using the TokenConv program.
+//
+// CAMLE TOKENS BEGIN
+  public static final String[] tokenNames = new String[] {
+"NONE", "NONE", "NONE", "NONE", "ASSIGN", "CLOSEPAREN", "COMMA", "COMMENT", "DIVIDE", "DO", "ELSE", "EQUAL", "FALSE", "FLOAT", "GREATER", "GREATEREQUAL", "IDENT", "IF", "INTNUM", "LOGAND", "MINUS", "MULTIPLY", "NOT", "NOTEQUAL", "OPENPAREN", "OR", "PLUS", "READ", "SEMICOLON", "SKIP", "SMALLEQUAL", "SMALLER", "STRING", "THEN", "TRUE", "WHILE", "WRITE", "WRITELN", "WS", "XOR"};
+  public static final int ASSIGN=4;
+  public static final int CLOSEPAREN=5;
+  public static final int COMMA=6;
+  public static final int COMMENT=7;
+  public static final int DIVIDE=8;
+  public static final int DO=9;
+  public static final int ELSE=10;
+  public static final int EQUAL=11;
+  public static final int FALSE=12;
+  public static final int FLOAT=13;
+  public static final int GREATER=14;
+  public static final int GREATEREQUAL=15;
+  public static final int IDENT=16;
+  public static final int IF=17;
+  public static final int INTNUM=18;
+  public static final int LOGAND=19;
+  public static final int MINUS=20;
+  public static final int MULTIPLY=21;
+  public static final int NOT=22;
+  public static final int NOTEQUAL=23;
+  public static final int OPENPAREN=24;
+  public static final int OR=25;
+  public static final int PLUS=26;
+  public static final int READ=27;
+  public static final int SEMICOLON=28;
+  public static final int SKIP=29;
+  public static final int SMALLEQUAL=30;
+  public static final int SMALLER=31;
+  public static final int STRING=32;
+  public static final int THEN=33;
+  public static final int TRUE=34;
+  public static final int WHILE=35;
+  public static final int WRITE=36;
+  public static final int WRITELN=37;
+  public static final int WS=38;
+  public static final int XOR=39;
+// CAMLE TOKENS END
+
+  // Global counter for labels.
+
+  public static int labelCount = 0;
+
+  public static IRTree convert(CommonTree ast)
+  {
+    IRTree irt = new IRTree();
+    Memory.change_Haskell(1);
+    program(ast, irt);
+    return irt;
+  }
+
+  public static void program(CommonTree ast, IRTree irt)
+  {
+    statements(ast, irt);
+  }
+
+  public static void statements(CommonTree ast, IRTree irt)
+  {
+    int i;
+    Token t = ast.getToken();
+    int tt = t.getType();
+    if (tt == SEMICOLON) {
+      IRTree irt1 = new IRTree();
+      IRTree irt2 = new IRTree();
+      CommonTree ast1 = (CommonTree)ast.getChild(0);
+      CommonTree ast2 = (CommonTree)ast.getChild(1);
+      statements(ast1, irt1);
+      statements(ast2, irt2);
+      // irt.setOp("SEQ");
+      irt.setOp("Comp");
+      irt.addSub(irt1);
+      irt.addSub(irt2);
+    }
+    else {
+      statement(ast, irt);
+    }
+  }
+
+  public static void statement(CommonTree ast, IRTree irt)
+  {
+
+    // Must mean that there can be at most 3 subtrees. One may be null
+
+    // AST's have tokens and each token has a type.
+    // AST's also have a getChild which can be converted to CommonTree.
+
+    // IRT's have a OP with up to 3 subtrees by addSub.
+
+    CommonTree ast1, ast2, ast3;
+
+    // Create the new IRTrees.
+
+    IRTree irt1 = new IRTree(), irt2 = new IRTree(), irt3 = new IRTree();
+
+    // Get the token of the astree passed. This is the root node which contains the other ast.
+
+    Token t = ast.getToken();
+
+    // We then get the type of this token and parse the relevant tree.
+
+    int tt = t.getType();
+
+    // Let's now check the type of this token
+
+    if (tt == WRITE) {
+
+      // Let's get the ONLY subtree of this command.
+
+      ast1 = (CommonTree)ast.getChild(0);
+
+      // Let's submit this to the arg function which will return whether it is an 'int' or string.
+      // It will also modify the irtree and allocate the correct amount of space for expressions.
+
+      String type = arg(ast1, irt1);
+
+      // We then check if this is an int.
+
+      // IRTrees can be leaves or have 1, 2 or 3 subtrees.
+
+      if (type.equals("int")) {
+
+        // If this is an int let's enter the irt and set the operation to WR - this is write not for integers.
+
+        // irt.setOp("WR");
+        irt.setOp("WriteA");
+        irt.addSub(irt1);
+      }
+      else if(type.equals("string")) {
+        // irt.setOp("WRS");
+        irt.setOp("WriteS");
+        irt.addSub(irt1);
+      } else if(type.equals("bool")) {
+        // irt.setOp("SEQ");
+        irt.setOp("WriteB");
+
+        IRTree irt4 = new IRTree("SEQ");
+
+        int beginningLabel = labelCount;
+        IRTree beginningLabelTree = new IRTree("LABEL", new IRTree("N"+beginningLabel));
+        labelCount++;
+
+        int labelTwo = labelCount;
+        IRTree labelSecond = new IRTree("LABEL", new IRTree("N"+labelTwo));
+        labelCount++;
+
+        int labelThree = labelCount;
+        labelCount++;
+
+        irt.addSub(translate(ast1, new IRTree("N"+beginningLabel), new IRTree("N"+labelTwo)));
+        irt.addSub(irt4);
+
+        irt4.addSub(beginningLabelTree);
+
+        IRTree irt5 = new IRTree("SEQ");
+        IRTree irt6 = new IRTree();
+
+        irt4.addSub(irt5);
+
+        String tx = "true\n";
+        int a = Memory.allocateString(tx); 
+        String st = String.valueOf(a);
+        irt6.setOp("MEM");
+        irt6.addSub(new IRTree("CONST", new IRTree(st)));
+
+        IRTree irt13 = new IRTree("WRS");
+        irt13.addSub(irt6);
+
+        irt5.addSub(irt13);
+
+        IRTree irt7 = new IRTree("SEQ");
+        irt5.addSub(irt7);
+
+        IRTree jumpTree = new IRTree("JUMP", new IRTree("N" + labelThree));
+
+        irt7.addSub(jumpTree);
+
+        IRTree irt8 = new IRTree("SEQ");
+        irt7.addSub(irt8);
+
+        irt8.addSub(labelSecond);
+        IRTree irt9 = new IRTree("SEQ");
+        irt8.addSub(irt9);
+
+        IRTree irt10 = new IRTree();
+
+        tx = "false\n";
+        a = Memory.allocateString(tx); 
+        st = String.valueOf(a);
+        irt10.setOp("MEM");
+        irt10.addSub(new IRTree("CONST", new IRTree(st)));
+        IRTree irt11 = new IRTree();
+        irt11.setOp("WRS");
+        irt11.addSub(irt10);
+        irt9.addSub(irt11);
+
+        irt9.addSub(new IRTree("LABEL", new IRTree("N" + labelThree)));
+      }
+    }
+    else if (tt == WRITELN) {
+      String a = String.valueOf(Memory.allocateString("\n"));
+      // irt.setOp("WRS");
+      irt.setOp("WriteLn");
+      // irt.addSub(new IRTree("MEM", new IRTree("CONST", new IRTree(a))));
+    } else if(tt == ASSIGN) {
+
+      // We need to allocate the space for the new int being created.
+
+      // We get the two children of the subtrees to see what is being allocated to what.
+
+      ast1 = (CommonTree)ast.getChild(0);
+      ast2 = (CommonTree)ast.getChild(1);
+
+      // Let's get what is in these two subtrees.
+
+      String textOfFirstChildSubTree = ast1.getText();
+      String textOfSecondChildSubTree = ast2.getText();
+
+      String memoryAddressOfVarOne = String.valueOf(Memory.allocateInt(textOfFirstChildSubTree));
+
+      // expression will act on irt2 declared above to do the MEM - CONST x thing.
+      // expression will also take care of constants too by just doing - CONST x.
+
+      expression(ast2, irt2);
+
+      // We need to set the operation of the root to MOVE.
+
+      // irt.setOp("MOVE");
+      irt.setOp("Ass");
+      // irt.addSub(new IRTree("MEM", new IRTree("CONST", new IRTree(memoryAddressOfVarOne))));
+      irt.addSub(new IRTree('"'+textOfFirstChildSubTree+'"'));
+
+      irt.addSub(irt2); 
+    } else if(tt ==  READ) {
+
+        // Read only has one AST subtree.
+
+        ast1 = (CommonTree)ast.getChild(0);
+
+        String textOfFirstChildSubTree = ast1.getText();
+
+        // We can only read in integers.
+
+        expression(ast1, irt1);
+
+        String memoryAddressOfVarToReadIn = String.valueOf(Memory.allocateInt(textOfFirstChildSubTree));
+
+        irt.setOp("RD");
+        irt.addSub(irt1);
+    } else if (tt == IF) {
+      /* We have two types:
+        
+        if(a op b) then c
+
+        if(a op b) then c else e
+
+        (c or e can be replaced by skip)
+
+        We can also have nested if else statements e.g. 
+
+        if(a op b) then if(d op f) else x else h
+
+      */
+
+        irt.setOp("SEQ");
+
+        CommonTree opAST = (CommonTree)ast.getChild(0);
+        CommonTree ifPart = (CommonTree)ast.getChild(1);
+        CommonTree elsePart = (CommonTree)ast.getChild(2);
+
+        // Add the two trees. 
+        // irt1 will be the right IRTree.
+        // irt2 will be the left IRTree.
+
+        // Here we set the right IRTree to SEQ.
+        // We also want to implement a label.
+
+        irt1.setOp("SEQ");
+        int labelOne = labelCount;
+        IRTree labelFirst = new IRTree("LABEL", new IRTree("N"+labelOne));
+        labelCount++;
+
+        // Lets now generate the second label.
+
+        int labelTwo = labelCount;
+        IRTree labelSecond = new IRTree("LABEL", new IRTree("N"+labelTwo));
+        labelCount++;
+
+        // Let's pass ifPart one of the children of our ast's.
+
+        IRTree childOfSecondSeq = new IRTree("SEQ");
+        IRTree irt99 = new IRTree();
+        statements(ifPart, irt99);
+        childOfSecondSeq.addSub(irt99);
+        
+        // Let's add the if part to our right most subtree.
+        // Let's also add the label part.
+
+        irt1.addSub(labelFirst);
+        irt1.addSub(childOfSecondSeq);  
+
+        // Let's now deal with the jump label. 
+        // appendToIfIRTree will be added on to firstIfClause.
+        // The tree of the jump will be dealt with in the constructor.
+
+        int labelJump = labelCount;
+        IRTree appendToIfIRTree = new IRTree();
+        childOfSecondSeq.addSub(appendToIfIRTree);
+        IRTree jumpTree = new IRTree("JUMP", new IRTree("N" + labelJump));
+        appendToIfIRTree.addSub(jumpTree);
+        appendToIfIRTree.setOp("SEQ");
+        labelCount++;
+
+        // Let's now deal with the else part.
+
+        IRTree firstElseClause = new IRTree("SEQ");
+
+        // Let's add the label for the else part.
+        // Let's then process the else statements.
+        
+
+        IRTree irt5 = new IRTree("SEQ");
+        IRTree irt6 = new IRTree();
+        firstElseClause.addSub(labelSecond);
+        firstElseClause.addSub(irt5);
+        statements(elsePart, irt6);
+        irt5.addSub(irt6);
+
+        // Let's now add the label for the jump at the very end
+
+        irt5.addSub(new IRTree("LABEL", new IRTree("N" + labelJump)));
+
+        // Let's add the else part as a right subtree of appendToIfIRTree
+
+        appendToIfIRTree.addSub(firstElseClause);
+
+        // Let's now deal with the CJUMP 
+
+        IRTree cJumpNameOne = new IRTree("N"+labelOne);
+        IRTree cJumpNameTwo = new IRTree("N"+labelTwo);
+
+        irt.addSub(translate(opAST, cJumpNameOne, cJumpNameTwo));
+        irt.addSub(irt1);
+
+    } else if(tt == WHILE) {
+
+        CommonTree opAST = (CommonTree)ast.getChild(0);
+        CommonTree ifPart = (CommonTree)ast.getChild(1);
+
+        irt.setOp("Comp ");
+        
+        // int beginningLabel = labelCount;
+        // IRTree beginningLabelTree = new IRTree("LABEL", new IRTree("N"+beginningLabel));
+        // labelCount++;
+
+        IRTree startedLoopLabelTree = new IRTree("While");
+
+        IRTree childTwo = new IRTree("");
+        startedLoopLabelTree.addSub(childTwo);
+        expression(opAST, childTwo);
+
+        IRTree do_this_thing = new IRTree("Comp ");
+        startedLoopLabelTree.addSub(do_this_thing);
+        // IRTree child = new IRTree();
+        statements(ifPart, do_this_thing);
+        // do_this_thing.addSub(child);
+        
+        // IRTree skip = new IRTree("Skip");
+        irt.addSub(startedLoopLabelTree);
+        // irt.addSub(skip);
+
+
+
+
+
+
+
+
+
+
+
+
+        // int finishedLoopLabel = labelCount;
+        // IRTree finishedLoopLabelTree = new IRTree("LABEL", new IRTree("N"+finishedLoopLabel));
+        // labelCount++;
+
+        // IRTree rightHandSubTree = new IRTree("SEQ");
+        // IRTree startedLoopParent = new IRTree("SEQ");
+
+        // // irt.addSub(beginningLabelTree);
+        // irt.addSub(rightHandSubTree);
+
+        // startedLoopParent.addSub(startedLoopLabelTree);
+
+        // IRTree statementsOfIfPart = new IRTree();
+
+        // IRTree finalTreePart = new IRTree("SEQ");
+        // IRTree jumpPart = new IRTree("JUMP", new IRTree("N"+beginningLabel));
+
+        // seqRoot.addSub(finalTreePart);
+        // finalTreePart.addSub(jumpPart);
+        // finalTreePart.addSub(finishedLoopLabelTree);
+
+        // IRTree cJumpNameOne = new IRTree("N"+startedLoopLabel);
+        // IRTree cJumpNameTwo = new IRTree("N"+finishedLoopLabel);
+
+        // rightHandSubTree.addSub(translate(opAST, cJumpNameOne, cJumpNameTwo));
+        // rightHandSubTree.addSub(startedLoopParent);
+    } else if(tt == SKIP) {
+        irt.setOp("NOP");
+    }
+    else {
+      error(tt);
+    }
+  }
+
+// Translate has to replace both the while and the if conditionals.
+
+  public static IRTree translate(CommonTree booleanExp, IRTree nameOne, IRTree nameTwo) {
+    Token token = booleanExp.getToken();
+    int operatorType = token.getType();
+
+    CommonTree leftHandExpression = (CommonTree)booleanExp.getChild(0);
+    CommonTree rightHandExpression = (CommonTree)booleanExp.getChild(1);
+
+    IRTree tree = new IRTree("SEQ");
+
+    // switch(operatorType) {
+    //   case TRUE:   
+    //       IRTree addJumpTrue = new IRTree("JUMP", nameOne);       
+    //       return addJumpTrue;
+    //   case FALSE:
+    //       IRTree addJumpFalse = new IRTree("JUMP", nameTwo);       
+    //       return addJumpFalse;
+    //   default:
+    //     break;
+    // }
+
+    // switch(operatorType) {
+    //   case LOGAND:
+
+    //       IRTree secondSubTree = new IRTree("SEQ");
+
+    //   // Every time we meet an & we know we then need a next label.
+    //   // That next label needs to be applied to the right hand recursive call.
+          
+    //       IRTree nToPassLeft = new IRTree("N" + labelCount);
+    //       IRTree next = new IRTree("LABEL", nToPassLeft);
+    //       labelCount++;
+
+    //       secondSubTree.addSub(next);
+    //       secondSubTree.addSub(translate((CommonTree)rightHandExpression, nameOne, nameTwo));
+    //       IRTree firstSubTree = translate((CommonTree)leftHandExpression, nToPassLeft, nameTwo);
+
+    //       tree.addSub(firstSubTree);
+    //       tree.addSub(secondSubTree);
+    //       break;
+
+    //   case OR:
+    //       IRTree secondSubTree2 = new IRTree("SEQ");
+          
+    //       IRTree nToPassLeft2 = new IRTree("N" + labelCount);
+    //       IRTree next2 = new IRTree("LABEL", nToPassLeft2);
+    //       labelCount++;
+
+    //       secondSubTree2.addSub(next2);
+    //       secondSubTree2.addSub(translate((CommonTree)rightHandExpression, nameOne, nameTwo));
+    //       IRTree firstSubTree2 = translate((CommonTree)leftHandExpression, nameOne, nToPassLeft2);
+
+    //       tree.addSub(firstSubTree2);
+    //       tree.addSub(secondSubTree2);
+    //       break;
+
+    //   case NOT:
+    //     // Not only has one child.
+    //     return translate((CommonTree)leftHandExpression, nameTwo, nameOne);
+
+    //   case SMALLEQUAL: 
+    //     IRTree cJumpS = c_jump(booleanExp, nameOne, nameTwo);
+    //     return cJumpS;
+        
+    //   case EQUAL: 
+    //     IRTree cJumpE = c_jump(booleanExp, nameOne, nameTwo);
+    //     return cJumpE;
+
+    //   case SMALLER:
+    //     IRTree cJumpSmaller = c_jump(booleanExp, nameOne, nameTwo);
+    //     return cJumpSmaller;
+
+    //   case GREATER:
+    //     IRTree cJumpGreater = c_jump(booleanExp, nameOne, nameTwo);
+    //     return cJumpGreater;   
+
+    //   case GREATEREQUAL:
+    //     IRTree cJumpGrequal = c_jump(booleanExp, nameOne, nameTwo);
+    //     return cJumpGrequal;    
+
+    //   case NOTEQUAL:
+    //     IRTree cJumpNequal = c_jump(booleanExp, nameOne, nameTwo);
+    //     return cJumpNequal;    
+    // }
+
+    return tree;
+  }
+  
+  public static IRTree c_jump(CommonTree booleanExp, IRTree nameOne, IRTree nameTwo) {
+    IRTree cJumpPart = new IRTree("CJUMP");
+    IRTree opTree = new IRTree(booleanExp.getText());
+    IRTree expOne = new IRTree();
+    IRTree expTwo = new IRTree();
+    expression((CommonTree)booleanExp.getChild(0), expOne); 
+    expression((CommonTree)booleanExp.getChild(1), expTwo);
+    cJumpPart.addSub(opTree);
+    cJumpPart.addSub(expOne);
+    cJumpPart.addSub(expTwo);
+    cJumpPart.addSub(nameOne);
+    cJumpPart.addSub(nameTwo);
+    return cJumpPart;
+  }
+
+  // arg modifies the IRTree
+
+  // This is used by write to figure out whether to use WR or WRS (int or string).
+  // It returns a type which can be compared.
+  // It also modifies the IRTree and evaluates any expressions to be printed.
+
+  public static String arg(CommonTree ast, IRTree irt)
+  {
+    Token t = ast.getToken();
+    int tt = t.getType();
+    if (tt == STRING) {
+      String tx = t.getText();
+      int a = Memory.allocateString(tx); 
+      String st = String.valueOf(a);
+      
+      // irt.setOp("MEM");
+      // irt.addSub(new IRTree("CONST", new IRTree(st)));
+      irt.setOp('"'+tx+'"');
+
+      return "string";
+    } else if(tt == INTNUM || tt == IDENT) {
+      expression(ast, irt);
+      return "int";
+    } else if(tt == FALSE || tt == TRUE || tt == LOGAND || tt == NOT || tt == OR) {
+      return "bool";
+    } else {
+      expression(ast, irt);
+      return "int";      
+    }
+  }
+
+  public static void expression(CommonTree ast, IRTree irt)
+  {
+    CommonTree ast1;
+
+    // We create an IRT and an AST.
+
+    IRTree irt1 = new IRTree();
+
+    // We get the token of the ast.
+
+    Token t = ast.getToken();
+
+    // We get the token type.
+
+    int tt = t.getType();
+
+    // We check is it an integer or an identifier.
+
+    if (tt == INTNUM) {
+ 
+      // If it is an integer. i.e. i := 2;
+
+      constant(ast, irt1);
+
+      // This sets the IRT
+
+      // irt.setOp("CONST");
+      irt.setOp("N ");
+      irt.addSub(irt1);
+    } else if (tt == IDENT) {
+      
+      // Variables hold a memory location.
+
+      // irt.setOp("MEM");
+      irt.setOp("V ");
+
+      // Variables can only be integers so only allocate four bytes.
+
+      // We pass t.getText() so we can access the symbol table 
+
+      // We have to initialise the subtree with a string as in IRTree.java we can only initialise a string as the OP.
+
+      // irt.addSub(new IRTree("CONST", new IRTree(Integer.toString(Memory.allocateInt(t.getText())))));
+
+      irt.addSub(new IRTree('"'+t.getText()+'"'));
+
+    } else if (tt == PLUS || tt == MULTIPLY || tt == MINUS || tt == DIVIDE || tt == SMALLEQUAL || tt == EQUAL) {
+      
+      String operation = new String("");
+      
+      if(tt == PLUS) {
+        operation = "Add";
+      } else if (tt == MULTIPLY) {
+        operation = "Mult";
+      } else if (tt == MINUS) {
+        operation = "Sub";
+      } else if(tt == SMALLEQUAL) {
+        operation = "Le";
+      } else if(tt == EQUAL) {
+        operation = "Eq";
+      } 
+
+      // We find out the left and right subtrees of the AST.
+
+      CommonTree ast0 = (CommonTree)ast.getChild(0);
+      ast1 = (CommonTree)ast.getChild(1);
+      IRTree irt2 = new IRTree();
+      IRTree irt3 = new IRTree();
+
+      // We then 'recursively' pass these to expression again and if these are a * they will be parsed here again.
+      // If however, they are numbers then they will be sent to constant and sorted out.
+      // If they are identifiers they will also be sorted out.
+
+      expression(ast0, irt2);
+      expression(ast1, irt3);
+      irt.setOp(operation);
+      irt.addSub(irt2);
+      irt.addSub(irt3);
+    } else {
+        String operation = "HALT";
+        irt.setOp(operation);
+        // Additional Features.
+        System.out.println(tt);
+      }
+  }
+
+  public static void constant(CommonTree ast, IRTree irt)
+  {
+    // This thing gets the token of the ast given.
+
+    Token t = ast.getToken();
+
+    // We get the type of the token given. THIS IS FOR BASIC ERROR CHECKING.
+
+    int tt = t.getType();
+
+    // It if it an integer.
+
+    if (tt == INTNUM) {
+
+      // Let's get the text of the token which should be the integer itself.
+
+      // We literally set the op to an integer.
+
+      String integerValue = t.getText();
+      irt.setOp(integerValue);
+    }
+    else {
+      error(tt);
+    }
+  }
+
+  private static void error(int tt)
+  {
+    System.out.println("IRT error: "+tokenNames[tt]);
+    System.exit(1);
+  }
+}
+ 

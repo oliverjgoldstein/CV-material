@@ -1,0 +1,124 @@
+from __future__ import print_function
+import numpy as np
+from scipy.stats import bernoulli
+import Again
+import copy
+
+size = 10
+
+def sign(value):
+    if value > 0:
+        return 1
+    else:
+        return -1
+
+def print_matrix(matrix):
+    for i in range(0, size):
+        for j in range(0, size):
+            string_state = ""
+            if matrix[i][j] == 1:
+                print(" 1", end = '')
+            else:
+                print(matrix[i][j], end = '')
+
+        print("\n")
+
+def hamming_distance(degraded_mem, original):
+    dist = 0
+    for row in range(0, len(degraded_mem[0])):
+        for col in range(0, len(degraded_mem[1])):
+            if degraded_mem[row][col] != original[row][col]:
+                dist += 1
+    return dist
+
+def flip(memory, prob):
+    bernoulli_var = bernoulli.rvs(size=1,p=prob)[0]
+    if bernoulli_var == 1:
+        if memory == 1:
+            return -1
+        else:
+            return 1
+    else:
+        return memory
+
+def degrade_memory(memory, p):
+    degraded = copy.deepcopy(memory)
+    for row in range(0, len(memory)):
+        for col in range(0, len(memory)):
+            degraded[row][col] = flip(memory[row][col], p)
+    return degraded
+
+T = [[[[0 for x in range(0,size)]
+      for y in range(0, size)]
+      for i in range(0, size)]
+      for j in range(0, size)]
+
+memories = [Again.memory_one,
+            Again.memory_two,
+            Again.memory_three,
+            Again.memory_four,
+            Again.memory_five,
+            Again.memory_six,
+            Again.memory_seven,
+            Again.memory_eight,
+            Again.memory_nine,
+            Again.memory_ten]
+
+degraded_mems = [Again.degraded_memory_one,
+            Again.degraded_memory_two,
+            Again.degraded_memory_three,
+            Again.degraded_memory_four,
+            Again.degraded_memory_five,
+            Again.degraded_memory_six,
+            Again.degraded_memory_seven,
+            Again.degraded_memory_eight,
+            Again.degraded_memory_nine,
+            Again.degraded_memory_ten]
+
+mems_used = 3
+
+for x in range(0,size):
+    for y in range(0, size):
+        for i in range(0, size):
+            for j in range(0, size):
+                T_xy_ij = 0
+                for mem in range(0, mems_used):
+                    T_xy_ij += memories[mem][i][j] * memories[mem][x][y]
+
+                # T_xy_ij /= len(memories)
+
+                T[x][y][i][j] = T_xy_ij
+                T[i][j][x][y] = T_xy_ij
+
+# Set self weights to zero
+
+for x in range(0, size):
+    for y in range(0, size):
+        for i in range(0, size):
+            for j in range(0, size):
+                if (x,y) == (i,j):
+                    T[x][y][i][j] = 0
+                    T[i][j][x][y] = 0
+
+total = 0
+# Now set the state and determine input
+for runs in range(0, total_runs):
+for mem in range(0, mems_used):
+
+    degraded = degrade_memory(memories[mem], 0.4) #degraded_mems[mem]
+    # print_matrix(degraded)
+    # print_matrix(memories[mem])
+    for time in range(0, 100):
+        for x in np.random.permutation(size):
+            for y in np.random.permutation(size):
+                E = 0
+                for i in range(0, size):
+                    for j in range(0, size):
+                        E += T[i][j][x][y] * degraded[i][j]
+
+                degraded[x][y] = sign(E)
+
+    # print_matrix(degraded)
+    print(hamming_distance(degraded, memories[mem]))
+    total += hamming_distance(degraded, memories[mem])
+print(total)

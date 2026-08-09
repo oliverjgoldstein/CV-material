@@ -1,0 +1,149 @@
+import random
+a = -1
+
+memory_one = [
+[1,1,a,a,a,a,a,a,a,a],
+[1,1,a,a,a,a,a,a,a,a],
+[1,1,a,a,a,a,a,a,a,a],
+[1,1,a,a,a,a,a,a,a,a],
+[1,1,a,a,a,a,a,a,a,a],
+[1,1,a,a,a,a,a,a,a,a],
+[1,1,a,a,a,a,a,a,a,a],
+[1,1,a,a,a,a,a,a,a,a],
+[1,1,1,1,1,1,1,1,1,1],
+[1,1,1,1,1,1,1,1,1,1]]
+
+memory_two = [
+[a,a,a,a,a,a,a,a,a,a],
+[a,1,1,1,1,1,1,1,1,a],
+[a,1,1,1,1,1,1,1,1,a],
+[a,1,1,a,a,a,a,1,1,a],
+[a,1,1,a,a,a,a,1,1,a],
+[a,1,1,a,a,a,a,1,1,a],
+[a,1,1,a,a,a,a,1,1,a],
+[a,1,1,1,1,1,1,1,1,a],
+[a,1,1,1,1,1,1,1,1,a],
+[a,a,a,a,a,a,a,a,a,a]]
+
+memory_three = [
+[a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a],
+[1,1,1,1,1,1,1,1,1,1],
+[1,1,a,a,a,a,a,a,1,1],
+[1,1,a,a,a,a,a,a,1,1],
+[1,1,1,1,1,1,1,1,1,1],
+[1,1,a,a,a,a,a,a,1,1],
+[1,1,a,a,a,a,a,a,1,1]]
+
+memory_four = [
+[1,a,a,a,a,a,a,a,a,1],
+[a,1,a,a,a,a,a,a,1,a],
+[a,a,1,a,a,a,a,1,a,a],
+[a,a,a,1,a,a,1,a,a,a],
+[a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,1,1,a,a,a,a],
+[a,a,a,1,1,1,1,a,a,a],
+[a,a,1,1,1,1,1,1,a,a],
+[a,1,a,a,a,a,a,a,1,a],
+[1,a,a,a,a,a,a,a,a,1]]
+
+memory_five = [
+[1,1,a,a,1,a,1,a,1,a],
+[1,1,a,a,1,a,1,a,1,a],
+[1,1,a,a,1,a,1,a,1,a],
+[1,1,a,a,1,a,1,a,1,a],
+[1,1,1,1,1,1,1,1,1,a],
+[1,a,a,a,1,a,1,a,a,a],
+[1,1,a,a,1,a,1,a,1,a],
+[1,1,a,a,1,a,1,a,1,a],
+[1,1,a,a,1,a,1,a,1,a],
+[1,1,a,a,1,a,1,a,1,a]]
+
+memory_six = [
+[a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a],
+[1,1,1,1,1,1,1,1,1,1],
+[1,1,1,1,1,1,1,1,1,1],
+[a,a,a,a,1,1,a,a,a,a],
+[a,a,a,a,1,1,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a],
+[a,a,a,1,1,1,1,a,a,a],
+[a,a,a,1,1,1,1,a,a,a]]
+
+memory_seven = [
+[a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a],
+[a,a,1,1,a,a,a,a,1,1],
+[a,a,1,1,1,1,1,1,1,1],
+[a,a,1,1,a,a,a,a,1,1],
+[a,a,1,1,a,a,a,a,1,1],
+[a,a,a,a,a,a,a,a,1,1],
+[a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a]]
+
+memory_eight = [
+[a,a,a,a,a,1,a,a,a,a],
+[a,a,1,a,a,1,a,1,1,a],
+[a,a,1,1,a,1,a,1,a,a],
+[a,a,1,a,1,a,a,1,a,a],
+[a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a],
+[a,a,a,a,a,a,a,a,a,a],
+[a,1,1,1,1,1,1,1,1,1],
+[a,1,a,1,1,1,1,1,1,1],
+[a,1,1,a,1,1,1,1,1,1]]
+
+memory_nine = [
+[a,a,a,a,1,a,1,a,a,a],
+[a,a,a,a,1,a,1,a,a,a],
+[a,a,a,a,1,a,1,a,a,a],
+[1,1,1,a,1,a,1,1,1,1],
+[a,a,1,a,1,a,1,1,1,1],
+[1,1,1,a,1,a,1,1,1,1],
+[a,a,a,a,a,a,1,a,a,a],
+[a,a,a,a,a,a,1,a,a,a],
+[a,a,a,a,a,a,1,a,a,a],
+[a,a,a,a,a,a,1,a,a,a]]
+
+memory_ten = [
+[1,1,1,1,1,1,1,1,1,1],
+[a,a,a,1,1,1,1,a,a,a],
+[a,a,1,1,1,1,1,1,a,a],
+[a,a,1,1,1,1,1,1,a,a],
+[a,1,1,a,a,a,a,1,1,a],
+[a,1,1,a,a,a,a,1,1,a],
+[1,1,a,a,a,a,a,a,1,1],
+[1,1,a,a,a,a,a,a,1,1],
+[1,1,a,a,a,a,a,a,1,1],
+[1,1,a,a,a,a,a,a,1,1]]
+
+memory_eleven = [
+[a,a,a,a,a,a,a,1,a,a],
+[a,a,a,a,a,1,a,1,a,a],
+[a,a,1,a,a,1,a,1,a,a],
+[a,a,1,a,a,1,a,1,a,a],
+[1,a,1,a,1,1,a,1,a,a],
+[a,a,1,a,1,1,a,a,a,1],
+[a,a,1,a,1,a,a,1,a,a],
+[1,a,a,a,1,a,a,a,a,a],
+[a,a,a,a,1,a,a,1,a,a],
+[1,a,a,a,a,a,a,a,a,a]]
+
+memory_twelve = [
+[a,a,a,a,a,a,a,1,a,a],
+[a,a,a,a,a,1,a,1,a,a],
+[a,a,1,a,a,1,a,1,a,a],
+[a,a,1,a,a,1,a,1,a,a],
+[1,a,1,a,1,1,a,1,a,a],
+[a,a,1,a,1,1,a,a,a,1],
+[a,a,1,a,1,a,a,1,a,a],
+[1,a,a,a,1,a,a,a,a,a],
+[a,a,a,a,1,a,a,1,a,a],
+[1,a,a,a,a,a,a,a,a,a]]
+
+def generate_mem():
+    return [[(-1 if random.randint(0,1) == 0 else 1) for i in range(0, 10)] for j in range(0,10)]

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+<h1>Server Description</h1>
+
+<p>
+    The server that you will be using to play games over a network is split into two
+    modules (<a href="https://nodejs.org/api/modules.html">more info</a>). These are called the
+    <strong>PlayerServer (player_server.js)</strong> and the <strong>GameServer (game_server.js)</strong>.
+    One way to think of these is to consider them as Classes although it doesn't work quite the same as in Java.
+    The modules are able to work independently of each other. However, to be able to play a game over the server,
+    they will need to be wired up together in the correct way. This is done in the SimpleServer module (server_service.js).
+</p>
+
+<h3>PlayerServer</h3>
+<p>
+    The player server is the part of the server which handles incoming messages from players
+    (people who are playing the game). The two types of messages that the player server needs
+    to be able to handle are 'registrations' which are message from the player that they wish to join
+    a game, and 'moves' which are messages from the players that detail a move that they want to make.
+</p>
+
+<h3>GameServer</h3>
+<p>
+    The game server is the more complex of the two modules and handles incoming messages from a judge. The judge
+    is a Java client which drives the game forward, prompting players to make moves, checking the moves are
+    valid and sending messages to the players to let them know when the game has finished.
+</p>
+
+<h3>SimpleServer</h3>
+<p>
+    The role of this module is to link up the PlayerServer and the GameServer so that the messages are passed between
+    them in the correct way. To do this you will need to apply listener functions to the various events that are emitted
+    from the two modules. The relevant events are: player_server.on('register'), player_server.on('move') and
+    game_server.on('initialised').
+</p>
+
+
+<h1>Communication between the server and the clients</h1>
+<p>
+    All communication to and from the server is done using JSON strings. Each JSON string will contain a 'type'
+    property which specifies the command. For each different types of messages there will be a specific set of
+    data that is needed for the message to be processed. For example: '{type: "INITIALISE", game_id: 4}'.
+    On the Java side, these strings are serialised into message objects. On the server side, the type property
+    is checked and the relevant action taken.
+</p>
+
+
+<h1>Testing your server</h1>
+<p>
+    Similar to your previous coursework, we have provided you with a suite of tests with which you can check that
+    your program is working as required. As the server is written using Node JS we are using the
+    <a href="http://mochajs.org/">mocha</a> testing framework as well as the <a href="http://chaijs.com/">chai</a>
+    assertion library. Mocha and chai are not installed by default on the lab machines but you can install
+    them in the following way:
+</p>
+<ol>
+    <li>Navigate to the server folder <code>&ltyour folder&gt/scotlandyard/server</code></li>
+    <li>Use the command <code>npm install mocha</code></li>
+    <li>Use the command <code>npm install chai</code></li>
+    <li>Run the tests using <code>./node_modules/mocha/bin/mocha</code></li>
+</ol>
+
+
+<h1>Test Descriptions</h1>
+
+<h2>PlayerServer (player_server.js)</h2>
+<p>The first set of tests will require you to fill out the stub functions in the 'player_server.js' file.</p>
+
+<h3>Test 1: Listen</h3>
+<p>
+    To pass the first test you will need to tell the 'server' property to start listening when the
+    <code>.listen(port)</code> function is called. Check both the node js
+    <a href="https://nodejs.org/api/net.html">documentation</a> and 'game_server.js' for hints on how to do this.
+</p>
+
+<h3>Test2: Register</h3>
+<p>
+    To pass this test your PlayerServer must emit a 'register' event when a connected client sends a register message.
+    An example register message will look like '{type: "REGISTER", student_id: "testId"}'. The first thing you will have
+    to do is to assign a callback function to handle incoming data from a connected client. This will be done in the
+    callback assigned to the net.createServer function. Your assigned callback must then decode the incoming string into
+    a JSON object using the JSON.parse function. Once done, you can inspect the 'type' parameter of the JSON object and
+    if it is a 'REGISTER' emit a 'register' event. See <a href="https://nodejs.org/api/events.html">here</a> for more
+    information on event emitting.
+</p>
+
+
+<h3>Test 3: Register</h3>
+<p>
+    To pass this test you must have passed the 'student_id' that is contained in the incoming register message as one
+    of the arguments to the event emitting function.
+</p>
+
+<h3>Test 4: move</h3>
+<p>
+    To pass this test, you must trigger an event when a move message is sent to the server. A move message will look like
+    '{type:"MOVE", move { target:5, colour: "Red", ticket: "Bus"}}'. To do this follow a similar set of steps as you
+    used to emit the 'register' event.
+</p>
+
+
+<h3>Test 5: Move</h3>
+<p>
+    To pass this test you must make sure that when a move event is triggered, the move part of the message is passed
+    as an argument to the emit function.
+</p>
+
+<h2>SimpleServer (server_service.js)</h2>
+<p>The second set of tests will require you to fill out the stub functions in the 'server_service.js' file</p>
+
+<h3>Test 6: initialised</h3>
+<p>
+    After the server has started up, it will expect a judge to connect to the GameServer and initialise a new game
+    with a game id. When this has happened, the GameServer will emit an 'initialised' event with an argument that
+    contains the game id. To pass this first test, you will need to add a function that listens for 'initialised'
+    events from the GameServer, and set a variable in the SimpleServer to hold the value of the id. For this test
+    to pass you will need to return the game id from the simple_server.gameId() function.
+</p>
+
+<h3>Test 7: register</h3>
+
+<p>
+    For a player to register that it intends to join a game, it uses the register method. If you have completed the
+    tests prior to this, your PlayerServer should be emitting events when a player does this. For the next few tests,
+    you will need to add a function to listen for 'register' events from the PlayerServer and process them properly.
+    Part of the registration process requires the assignment of colours to registering players. To pass this first test
+    you must extract a colour from the array of colours held in the simple server. You should always extract from the
+    beginning of the list. After extracting it you must remove the extracted colour from the list.
+</p>
+
+<h3>Test 8: register</h3>
+<p>
+    After selecting a colour for the registering player, you must register that player with the GameServer. To do this
+    you should call the game_server.addPlayer(player, colour, game_id) function. NOTE The player argument must be the
+    actual socket that the has made the request to register.
+</p>
+
+
+<h3>Test 9: move</h3>
+<p>
+    When a game is in progress, the players will be sending the judge moves that they have decided to make. Again, if
+    your previous tests are passing, your PlayerServer will be emitting events when it receives a move message from a
+    player. To make this test pass, you will need to add a function to this 'move' event and pass the move into the
+    game server using the game_server.makeMove(player, move) function.
+</p>
+
+
+
+
+</body>
+</html>

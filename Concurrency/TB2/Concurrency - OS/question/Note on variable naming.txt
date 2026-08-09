@@ -1,0 +1,8 @@
+Note on variable naming:
+Switching halfway through the project...
+Changed from:
+
+constants: become: I_AM_COOL
+variables: iAmCool to i_am_cool
+functions: i_am_cool() to i_Am_Cool()
+Added bracket changing from x(int y) { } to x( int y ) { }

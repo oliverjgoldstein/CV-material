@@ -1,0 +1,15 @@
+* {
+    margin:         0;
+    padding:        0;
+    font-family:    "proxima_nova_ltregular";
+}
+
+html, body {
+    height:     100%;
+    width:      100%;   
+}
+
+/* This gets rid of the annoying blue line */
+:focus {
+    outline: 0;
+}

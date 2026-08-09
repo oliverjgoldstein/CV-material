@@ -1,0 +1,332 @@
+function [number_of_points, LoS, finalpos, finalang, points] = pfl(botSim, map, target)
+
+param_one       = 0;
+
+% Generate some random particles inside the map
+
+num                  = 600;
+probability_vec      = zeros(num,1);
+probability_vec(:,:) = 1/num;
+scan_num             = 30;
+particles(num,1)     = BotSim; % Vector of objects setup
+
+for i = 1:num
+%     particles(1) = BotSim(map);  % Each particle should use the same map as the botSim object
+%     particles(1).setBotPos([50 30]);
+%     particles(1).setBotAng(pi/2);
+%     particles(1).setScanConfig(botSim.generateScanConfig(scan_num))
+    particles(i) = BotSim(map);  % Each particle should use the same map as the botSim object
+    particles(i).randomPose(3);
+    particles(i).setScanConfig(botSim.generateScanConfig(scan_num), [2.4, 0])
+end
+
+%% Localisation starts here:
+
+targets             = BotSim(map);
+max_iteration_num   = 2;
+n                   = 0;
+botSim.setScanConfig(botSim.generateScanConfig(scan_num))
+converged           = 0;
+
+%% Particle filter loop
+
+while(converged == 0 && n < max_iteration_num)
+    n                       = n + 1;
+    botScan                 = realScan(scan_num,n); %get a scan from the real robot.
+    particle_distances      = zeros(scan_num, num); % This holds the distances for each particle
+    particle_crossing_pts   = zeros(scan_num, 2*num);
+
+    %% Simply finds the scan distances.
+    for i = 1:num
+       particle_scan            = particles(i).ultraScan();
+       particle_distances(:,i)  = particle_scan;
+    end
+
+
+    shiftFac=zeros(1,num);
+
+   % This finds out the best orientation by finding the minimum error,
+   % associated with a particular shift.
+   for q = 1:num
+       checkmat = particle_distances(:,q);
+       errmin   = realmax();
+       for i = 1:scan_num
+
+           botdistshift = circshift(botScan,i-1);
+           err          = checkmat - botdistshift;
+           perr         = abs(prod(err));
+
+           if perr < abs(prod(errmin))
+               errmin        = err;
+               shiftFac(1,q) = i - 1;
+          end
+       end
+   end
+
+ %% Shift to final position
+   for q = 1:num
+       check1    = particle_distances(:,q) - circshift(botScan,shiftFac(1,q));
+       rmse(1,q) = rms(abs(check1));
+   end
+
+   angle_of_robot = shiftFac*((2*pi)/scan_num); % Conversion to radians.
+   for i = 1:num
+       robot_angle_delta(:,i) = particles(i).getBotAng();
+   end
+
+   % Here, for each particle, the angle is updated such that they face the
+   % correct direction.
+   robot_angle_delta = robot_angle_delta+angle_of_robot;
+
+   for i = 1:num
+       particles(i).setBotAng(robot_angle_delta(i));
+   end
+
+   %% Calculate Probability of each particles
+   normalisation_constant = 1/((2 * pi)^0.5);
+   PrGx                   = normalisation_constant*exp(-(rmse/(2)));
+   
+   %probability_vec=ones(1,num)*(1/num);
+   
+
+   for i=1:num
+       probability_one       = PrGx(i)*probability_vec(i);
+       one_minus_probability = (1-PrGx(i))*(1-probability_vec(i));
+       particle_prob_vec(i)           = probability_one/(probability_one-one_minus_probability);
+   end
+
+   rescaling_to_one = 1/sum(particle_prob_vec);
+   particle_prob_vec         = particle_prob_vec*rescaling_to_one;
+   prob_vector_particles     = particle_prob_vec;
+   sorted_prob_list = sort(prob_vector_particles,'descend');
+
+   %% Pick 10 most likely particles
+   probmin = sorted_prob_list(20);
+
+   % Reset the probabilities to zero, if they are not in the top 10.
+   for i = 1:num
+       if prob_vector_particles(i) < probmin
+           prob_vector_particles(i) = 0;
+       end
+   end
+
+   % Take the probabilities that are not equal to zero.
+   prob2 = prob_vector_particles(prob_vector_particles~=0);
+   for i=1:num
+       % Make a random probability vector.
+       random(i) = rand(1);
+   end
+
+   %%Work out which particles are 'strong' and their values.
+
+
+   normalisation_const   = 1/sum(prob2);
+   prob_vector_particles = prob_vector_particles * normalisation_const;
+
+   % nonzero_particles finds the non zero elements and rounds them up to one or down to zero.
+   nonzero_particles     = find(prob_vector_particles);
+   sum_non_zero_prob     = cumsum(prob_vector_particles(prob_vector_particles~=0));
+   temp                  = prob_vector_particles;
+
+   % temp is now a vector of ones and zeros.
+   temp(temp > 0)           = 1;
+   number_of_particles_kept = sum(temp);
+
+   for i = 1:num
+       partpos(:,i) = particles(i).getBotPos();
+   end
+
+  %% Shift most likely particles to top of matrix
+  % The nonzero_particles is a sorted array where the most likely particles
+  % are the top of the array.
+   for i = 1:number_of_particles_kept
+       particles(i)       = particles(nonzero_particles(i));
+       probability_vec(i) = particle_prob_vec(nonzero_particles(i));
+   end
+
+   % Take 80% of the remainding particles and move them.
+   reallocated_particles     = round(0.8*(num-number_of_particles_kept));
+   total_number_of_particles = number_of_particles_kept + reallocated_particles;
+   first_particle_reallocate = number_of_particles_kept + 1;
+
+   %% Move other 80% of particles to most likely plus error
+   % Start at the first particle to reallocate
+   for i = first_particle_reallocate : total_number_of_particles
+       rand_num = rand(1);
+
+       % Here, a random number is generated and the index of the location
+       % is recorded.
+       for q = 1:number_of_particles_kept - 1
+           if rand_num>=sum_non_zero_prob(q) && rand_num<=sum_non_zero_prob(q+1)
+               x=q+1;
+           end
+       end
+
+       % This is a check for the first index (Matlab zero indexing issues).
+       if rand_num>=0 && rand_num<=sum_non_zero_prob(1)
+           x=1;
+       end
+
+       probability_vec(i) = probability_vec(x); %occasional error
+       pos                = particles(x).getBotPos() + [randn(1), randn(1)];
+       ang                = particles(x).getBotAng();
+       particles(i).setBotPos(pos);
+       particles(i).setBotAng(ang);
+   end
+
+   %% Randomly allocate last particles
+   for i = total_number_of_particles:num
+       particles(i).randomPose(3);
+       probability_vec(i) = (1/num);
+   end
+   
+   %% Check if good enough particle has been found
+   % This section looks like arbitrary parameters have been put in.
+
+   if n > 0
+       particle_prob_vec_check = sort(particle_prob_vec,'descend');
+       if n < 2 ;
+           converged = 0;
+           [M,I]    = max(probability_vec);
+       elseif n ==2;
+           converged = 1;
+           [M,I]    = max(probability_vec);
+           finalpos = particles(I).getBotPos();
+           finalang = particles(I).getBotAng();
+       elseif mean(particle_prob_vec_check(1:10)) > 1/num || n==29
+           converged = 1;
+           [M,I]    = max(probability_vec);
+           finalpos = particles(I).getBotPos();
+           finalang = particles(I).getBotAng();
+       end
+
+        %% Drawing
+        %only draw if you are in debug mode or it will be slow during marking
+        if botSim.debug()
+            draw(botSim, first_particle_reallocate, number_of_particles_kept, particles, targets, converged, num, target, I);
+        end
+
+        %% Write code to decide how to move next
+        % here they just turn in cicles as an example
+        if converged == 0
+
+            move_distance = M/2;
+
+            %% Normal move, move to furthest distance
+            if param_one == 0
+                [furthest, crossing_point] = max(botScan);
+%                 nearScans = [-3,-2,-1,1,2,3]; % the 3 points around it.
+%                 for next = 1:6
+%                     nearData = botScan(crossing_point + nearScans(next));
+%                     if ismembertol(botScan(crossing_point),nearData,40) == 0
+%                         [furthest, crossing_point] = max(botScan(botScan<max(botScan))); % find second max.
+%                     end 
+%                 end
+            end
+
+            turn_reg = (2*pi/scan_num);
+            turn     = crossing_point * turn_reg;
+            direction=1; % 1 = anticlockwise, -1 = clockwise.
+            
+            if ge(turn,pi)
+                turn=(2*pi)-turn;
+                direction = -1;
+            end
+
+            %% If too close to wall, move in opposite direction
+%             if min(botScan) < 5
+%                 [~, crossing_point] = min(botScan);
+%                 move_distance       = 1;
+%                 turn                = (crossing_point+scan_num/2) * turn_reg;
+%                 direction=1;
+%             end
+            
+            realTurn(turn,direction);
+            realMove(move_distance);
+            
+            %scan left on bots and particles
+            %add to localisation
+            %scan front distance to know when stopped
+            
+           
+            % Here, all particles copy the actions of the robot.
+
+            for i =1:num
+                particles(i).turn(turn);
+                particles(i).move(move_distance);
+            end
+        end
+
+    %% Grid construction.
+    if converged == 1
+        %Create grid of points throughout map, - 5 for wall distance.
+        
+        
+        [mapy, mapx]    = size(map);
+        number_of_points  = 5;
+        points          = zeros(number_of_points, 2);
+        walls           = zeros(mapy, 2);
+        LoS             = ones(number_of_points, number_of_points);
+
+       
+        
+
+        points(1,1)=22;
+        points(1,2)=22;
+        points(2,1)=22;
+        points(2,2)=88;
+        points(3,1)=88;
+        points(3,2)=88;
+        %%Create points for target and localised
+        points(number_of_points - 1, 1) = finalpos(1);
+        points(number_of_points - 1, 2) = finalpos(2);
+        points(number_of_points, 1)     = target(1);
+        points(number_of_points, 2)     = target(2);
+
+        %%Create maps vectors
+        z = 0;
+        for i=1:mapy
+            z          = z+1;
+            walls(i,1) = map(z,1);
+            walls(i,2) = map(z,2);
+        end
+
+        %%Test if points can see each other
+        x = zeros(2,2);
+        y = zeros(2,2);
+        for i = 1:number_of_points
+            x(1,1) = points(i,1);
+            y(1,1) = points(i,2);
+
+            for q = 1:number_of_points
+                x(2,1)=points(q,1);
+                y(2,1)=points(q,2);
+                if i == q
+                    LoS(i,q)=0;
+                    continue
+                end
+                %%Work out if the lines between the walls and the lines between the points intersect
+                for z=1:mapy-1 %add way so matrix loops back on itself
+                    x(1,2) = walls(z,1);
+                    y(1,2) = walls(z,2);
+                    x(2,2) = walls(z+1,1);
+                    y(2,2) = walls(z+1,2);
+                    dx     = diff(x);  %# Take the differences down each column
+                    dy     = diff(y);
+                    den    = dx(1)*dy(2)-dy(1)*dx(2);  %# Precompute the denominator
+                    ua     = (dx(2)*(y(1)-y(3))-dy(2)*(x(1)-x(3)))/den;
+                    ub     = (dx(1)*(y(1)-y(3))-dy(1)*(x(1)-x(3)))/den;
+
+                    isInSegment = all(([ua ub] >= 0) & ([ua ub] <= 1));
+
+                    if isInSegment == 1
+                        LoS(i,q) = 0;
+                        continue
+                    end
+                end
+            end
+        end
+    end
+   end
+end
+end

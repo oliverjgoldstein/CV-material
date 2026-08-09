@@ -1,0 +1,7 @@
+% Find hidden identity by repeatedly calling agent_ask_oracle(oscar,o(1),link,L)
+% find_identity(-A)
+% If map adjacents are so cheap then why not do loads.
+find_identity(Actors):- findall(Actor, actor(Actor), Actors), print(Actors), wikipedia_profile(Actors).
+
+wikipedia_profile([]).
+wikipedia_profile([Actor|Actors]) :- wp(Actor,WT),wt_link(WT,L),writeln(L), fail, wikipedia_profile(Actors), fail.
